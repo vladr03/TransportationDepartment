@@ -18,6 +18,11 @@ app.get("/create", function (req, res) {
     res.render("create.hbs");
 });
 
+//login
+app.get("/login", function (req, res) {
+    res.render("login.hbs");
+});
+
 //edit account
 app.get("/edit/:id", function (req, res) {
     const id = req.params.id;
@@ -69,6 +74,25 @@ app.post("/edit", urlencodedParser, function (req, res) {
         if (err) return console.log(err);
         res.redirect("/index");
     });
+});
+
+app.post('/login', urlencodedParser, function (req, res) {
+    const email = req.body.email;
+    const password = req.body.password;
+    if (email && password) {
+        connection.query('SELECT * FROM customers WHERE email = ? AND password = ?', [email, password], function (error, results, fields) {
+            if (error) throw error;
+            if (results.length > 0) {
+                res.redirect('/index');
+            } else {
+                res.send('Incorrect Username and/or Password!');
+            }
+            res.end();
+        });
+    } else {
+        res.send('Please enter Username and Password!');
+        res.end();
+    }
 });
 
 app.listen(3306, function () {
