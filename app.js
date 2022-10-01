@@ -23,6 +23,11 @@ app.get("/login", function (req, res) {
     res.render("login.hbs");
 });
 
+//leave an order
+app.get("/main", function (req, res) {
+    res.render("main.hbs");
+});
+
 //edit account
 app.get("/edit/:id", function (req, res) {
     const id = req.params.id;
@@ -42,6 +47,20 @@ app.get("/index", function (req, res) {
         res.render("index.hbs", {
             customers: data
         });
+    });
+});
+
+app.post("/main", urlencodedParser, function (req, res) {
+
+    if (!req.body) return res.sendStatus(400);
+    const name = req.body.name;
+    const cargo = req.body.cargo;
+    const truck = req.body.truck;
+    const city = req.body.city;
+    const delivery_date = req.body.delivery_date;
+    connection.execute("INSERT INTO transportations (name, cargo, truck, city, delivery_date) VALUES (?, ?, ?, ?, ?)", [name, cargo, truck, city, delivery_date], function (err, data) {
+        if (err) return console.log(err);
+        res.redirect("/main");
     });
 });
 
