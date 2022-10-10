@@ -75,7 +75,6 @@ app.post("/main", urlencodedParser, function (req, res) {
     const delivery_date = req.body.delivery_date;
     connection.execute("INSERT INTO transportations (name, cargo, truck, city, delivery_date) VALUES (?, ?, ?, ?, ?)", [name, cargo, truck, city, delivery_date], function (err, data) {
         if (err) return console.log(err);
-        res.redirect("/main");
     });
 });
 

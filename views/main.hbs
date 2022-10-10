@@ -11,13 +11,13 @@
             box-sizing: border-box;
         }
 
-        .header {
+        .header-top {
             overflow: hidden;
             background-color: #B0E0E6;
             padding: 20px 10px;
         }
 
-        .header a {
+        .header-top a {
             margin-left: 5px;
             color: black;
             text-align: center;
@@ -27,18 +27,18 @@
             border-radius: 15px;
         }
 
-        .header a.logo {
+        .header-top a.logo {
             font-size: 20px;
             font-weight: bold;
         }
 
-        .header a.active {
+        .header-top a.active {
             padding: 7px;
             background-color: teal;
             color: white;
         }
 
-        .header a.active:hover {
+        .header-top a.active:hover {
             background-color: #797979;
         }
 
@@ -47,7 +47,7 @@
         }
 
         @media screen and (max-width: 500px) {
-            .header a {
+            .header-top a {
                 float: none;
                 display: block;
                 text-align: left;
@@ -62,7 +62,7 @@
             width: 500px;
             padding: 30px;
             background: #FFFFFF;
-            margin: 100px auto;
+            margin: 50px auto;
         }
 
         .form-style-8 h2 {
@@ -84,7 +84,6 @@
             outline: none;
             display: block;
             width: 100%;
-            padding: 7px;
             border: none;
             border-bottom: 1px solid #ddd;
             background: transparent;
@@ -113,39 +112,122 @@
             background: linear-gradient(to bottom, #34CACA 5%, #30C9C9 100%);
             background-color: #34CACA;
         }
+
+        footer {
+            display: flex;
+            flex-direction: clo;
+            justify-content: center;
+            padding: 5px;
+            background-color: teal;
+            color: #fff;
+        }
+
+        .description {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .description div {
+            width: 500px;
+            text-align: justify;
+            margin-bottom: 20px;
+            font-size: 18px;
+            line-height: 135%;
+        }
     </style>
     <meta charset="utf-8" />
 </head>
 
 <body>
-    <div class="header">
-        <a href="#default" class="logo">My Company</a>
-        <div class="header-right">
-            <a class="active" href="/orders">List of orders</a>
-            <a href="#contact">Contact</a>
-            <a href="#about">About</a>
+
+    <header>
+        <div class="header-top">
+            <a href="#default" class="logo">My Company</a>
+            <div class="header-right">
+                <a class="active" href="/orders">List of orders</a>
+                <a href="/login">Login</a>
+                <a href="/create">Sign up</a>
+            </div>
         </div>
-    </div>
-    <div class="form-style-8">
-        <form method="POST">
-            <h2 class="form-title">Leave an order</h1>
+    </header>
+
+
+    <div class="layout">
+        <div class="form-style-8">
+            <form method="POST">
+                <h2 class="form-title">Leave an order</h2>
                 <div class="form-field">
                     <input class="input" name="name" type="text" placeholder="Name" />
                 </div>
                 <div class="form-field">
-                    <input class="input" name="cargo" type="text" placeholder="Cargo" />
-                </div>
-                <div class="form-field">
-                    <input class="input" name="truck" type="text" placeholder="Truck" />
-                </div>
-                <div class="form-field">
                     <input class="input" name="city" type="text" placeholder="City" />
                 </div>
+                {{!-- <div class="form-field">
+                    <input class="input" name="cargo" type="text" placeholder="Cargo" />
+                </div> --}}
                 <div class="form-field">
-                    <input class="input" name="delivery_date" type="date" placeholder="Delivery_date" />
+                    <select name="cargo">
+                        <option value="" selected disabled hidden>Choose a service</option>
+                        <option>Apartment relocation</option>
+                        <option>Office relocation</option>
+                        <option>Removal of garbage</option>
+                        <option>Transportation of furniture and household appliances</option>
+                    </select>
                 </div>
-                <input type="submit" class="submitBtn" value="Create the order" />
-        </form>
+                {{!-- <div class="form-field">
+                    <input class="input" name="truck" type="text" placeholder="Truck" />
+                </div> --}}
+                <div class="form-field">
+                    <select name="truck">
+                        <option value="" selected disabled hidden>Choose a truck</option>
+                        <option value="volvo">Volvo</option>
+                        <option value="saab">Saab</option>
+                        <option value="opel">Opel</option>
+                        <option value="audi">Audi</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <input id="theDate" class="input" name="delivery_date" type="date" placeholder="Delivery_date" />
+                </div>
+                <input type="submit" class="submitBtn" value="Create the order" onclick="orderHandler()" />
+                <p style="color: teal;" id="success"></p>
+            </form>
+        </div>
+        <div class="description">
+            <h2>Our mission</h2>
+            <div>
+                We create a technological and reliable world of cargo transportation, comfortable for everyone, saving
+                time for life, recreation and business.
+                Our future is leadership in the field of low—tonnage and large-tonnage transportation.
+                We make every effort to be useful and meet the needs of each client.
+            </div>
+        </div>
     </div>
+    <footer>
+        <div class="footer-bottom">
+
+            About us
+        </div>
+    </footer>
 </body>
+<script>
+    var date = new Date();
+
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    if (month < 10) month = "0" + month;
+    if (day < 10) day = "0" + day;
+
+    var today = year + "-" + month + "-" + day;
+    document.getElementById("theDate").value = today;
+
+    function orderHandler() {
+        document.getElementById("success").innerHTML = "Order was created successfully"
+    }
+</script>
 <html>
