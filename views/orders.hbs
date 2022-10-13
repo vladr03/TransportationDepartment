@@ -26,7 +26,7 @@
         .accordion dt>a {
             text-align: center;
             font-weight: 700;
-            padding: 2em;
+            padding: 1em;
             display: block;
             text-decoration: none;
             color: #fff;
@@ -233,37 +233,88 @@
                 transform: scale(0.8);
             }
         }
+
+        .order div {
+            margin-right: 30px;
+        }
+
+        span {
+            font-style: italic;
+        }
+
+        button {
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            background-color: white;
+            color: black;
+            border: 2px solid #555555;
+        }
+
+        button:hover {
+            background-color: #555555;
+            color: white;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>Orders</h1>
 
+
+        <h1>Orders</h1>
+        <div>
+            <form action="delete" method="POST" style="display:inline;">
+                <button type="submit" onclick="toggle(this)">Delete all orders</button>
+            </form>
+        </div>
+        {{!-- <div id="mydiv" hidden>
+            <div class="no-orders">
+                There are no orders here
+            </div>
+        </div> --}}
         <div class="accordion">
 
             <dl>
-                {{#each transportations}}
+
+                {{#each orders}}
                 <dt><a class="accordionTitle" href="#">{{date delivery_date format="MMMM DD, YYYY"}}</a></dt>
+
                 <dd class="accordionItem accordionItemCollapsed">
-                    <div style="padding: 10px">
-                        <p>Сustomer's name: {{name}}</p>
+                    <div class="order" style="display:flex; padding: 10px">
+                        <div><span>Сustomer's name: </span>{{name}}</div>
 
-                        <p>Cargo: {{cargo}}</p>
+                        <div><span>Cargo: </span>{{cargo}}</div>
 
-                        <p>Truck: {{truck}}</p>
+                        <div><span>Truck: </span> {{truck}}</div>
 
-                        <p>City: {{city}}</p>
+                        <div><span>City: </span>{{city}}</div>
+
+
+                    </div>
+                    <div>
+
                     </div>
                 </dd>
                 {{/each}}
             </dl>
-
         </div>
-
     </div>
 
     <script>
+
+        /*let toggle = button => {
+            let element = document.getElementById("mydiv");
+            element.removeAttribute("hidden");
+        }*/
+
         var acc = document.getElementsByClassName("accordion");
         var i;
 

@@ -1,6 +1,7 @@
 const mysql = require("mysql2");
 const express = require("express");
 const hbs = require("hbs");
+const { response } = require("express");
 
 const app = express(); //like an object
 const urlencodedParser = express.urlencoded({ extended: false });
@@ -46,11 +47,11 @@ app.get("/edit/:id", function (req, res) {
 
 //all orders
 app.get("/orders", function (req, res) {
-    connection.execute("SELECT * FROM transportations", function (err, data) {
+    connection.execute("SELECT * FROM orders", function (err, data) {
         if (err) return console.log(err);
         console.log(data);
         res.render("orders.hbs", {
-            transportations: data
+            orders: data
         });
     });
 });
@@ -73,8 +74,9 @@ app.post("/main", urlencodedParser, function (req, res) {
     const truck = req.body.truck;
     const city = req.body.city;
     const delivery_date = req.body.delivery_date;
-    connection.execute("INSERT INTO transportations (name, cargo, truck, city, delivery_date) VALUES (?, ?, ?, ?, ?)", [name, cargo, truck, city, delivery_date], function (err, data) {
+    connection.execute("INSERT INTO orders (name, cargo, truck, city, delivery_date) VALUES (?, ?, ?, ?, ?)", [name, cargo, truck, city, delivery_date], function (err, data) {
         if (err) return console.log(err);
+        res.redirect("/main");
     });
 });
 
@@ -109,11 +111,11 @@ app.post("/edit", urlencodedParser, function (req, res) {
     });
 });
 
-app.post('/login', urlencodedParser, function (req, res) {
+app.post("/login", urlencodedParser, function (req, res) {
     const email = req.body.email;
     const password = req.body.password;
     if (email && password) {
-        connection.query('SELECT * FROM customers WHERE email = ? AND password = ?', [email, password], function (error, results, fields) {
+        connection.execute('SELECT * FROM customers WHERE email = ? AND password = ?', [email, password], function (error, results, fields) {
             if (error) throw error;
             if (results.length > 0) {
                 res.redirect('/index');
@@ -126,6 +128,15 @@ app.post('/login', urlencodedParser, function (req, res) {
         res.send('Please enter Username and Password!');
         res.end();
     }
+});
+
+app.post("/delete", function (req, res) {
+    //const id = req.params.id;
+    //console.log(id);
+    connection.execute("DELETE FROM orders", function (err, data) {
+        if (err) return console.log(err);
+        res.redirect("/orders");
+    });
 });
 
 app.listen(3306, function () {
