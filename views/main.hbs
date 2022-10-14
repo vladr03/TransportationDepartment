@@ -167,7 +167,7 @@
                 {{!-- <div class="form-field">
                     <input class="input" name="cargo" type="text" placeholder="Cargo" />
                 </div> --}}
-                <div class="form-field">
+                <div id="mydiv" class="form-field">
                     <select name="cargo">
                         <option value="" selected disabled hidden>Choose a service</option>
                         <option>Apartment relocation</option>
@@ -214,6 +214,7 @@
     </footer>
 </body>
 <script>
+
     var date = new Date();
 
     var day = date.getDate();
@@ -226,8 +227,10 @@
     var today = year + "-" + month + "-" + day;
     document.getElementById("theDate").value = today;
 
-    function orderHandler() {
-        document.getElementById("success").innerHTML = "Order was created successfully"
-    }
+    //function orderHandler() {
+    //    document.getElementById("success").innerHTML = "Order was created successfully";
+    //    let element = document.getElementById("mydiv");
+    //    element.setAttribute("hidden");
+    //}
 </script>
 <html>
