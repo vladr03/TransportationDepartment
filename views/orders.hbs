@@ -79,7 +79,7 @@
         }
 
         .accordion .container.active .content {
-            height: 90px;
+            height: 110px;
         }
 
         .accordion .container.active .label::before {
@@ -90,6 +90,10 @@
         h2 {
             margin-left: 10px;
         }
+
+        .form-field {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 
@@ -99,7 +103,7 @@
 
         <div>
             <form action="delete" method="POST" style="display:inline;">
-                <button type="submit" onclick="toggle(this)">Delete all orders</button>
+                <button type="submit">Delete all orders</button>
             </form>
         </div>
         {{!-- <div id="mydiv" hidden>
@@ -114,18 +118,18 @@
                 <div class="container">
                     <div class="label">{{date}}</div>
                     <div style="" class="content">
-                        <div>
+                        <div class="form-field">
                             Name: {{name}}
                         </div>
-                        <div>
-                            Cargo: {{cargo}}
+                        <div class="form-field">
+                            Service: {{service}}
                         </div>
-                        <div>
-                            Truck: {{truck}}
-                        </div>
-                        <div>
+                        <div class="form-field">
                             City: {{city}}
                         </div>
+                        <form action="delete/{{this.id}}" method="POST" style="display:inline;">
+                            <input type="submit" value="Delete" />
+                        </form>
                     </div>
 
                 </div>
@@ -149,6 +153,8 @@
             let element = document.getElementById("mydiv");
             element.removeAttribute("hidden");
         }*/
+
+
     </script>
 </body>
 <html>

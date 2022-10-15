@@ -70,11 +70,11 @@ app.post("/main", urlencodedParser, function (req, res) {
 
     if (!req.body) return res.sendStatus(400);
     const name = req.body.name;
-    const cargo = req.body.cargo;
+    const service = req.body.service;
     const truck = req.body.truck;
     const city = req.body.city;
     const delivery_date = req.body.delivery_date;
-    connection.execute("INSERT INTO orders (name, cargo, truck, city, delivery_date) VALUES (?, ?, ?, ?, ?)", [name, cargo, truck, city, delivery_date], function (err, data) {
+    connection.execute("INSERT INTO orders (name, service, city, delivery_date) VALUES (?, ?, ?, ?)", [name, service, city, delivery_date], function (err, data) {
         if (err) return console.log(err);
         res.redirect("/main");
     });
@@ -130,13 +130,20 @@ app.post("/login", urlencodedParser, function (req, res) {
     }
 });
 
-app.post("/delete", function (req, res) {
-    //const id = req.params.id;
+app.post("/delete/:id", function (req, res) {
+    const id = req.params.id;
     //console.log(id);
-    connection.execute("DELETE FROM orders", function (err, data) {
+    connection.execute("DELETE FROM orders WHERE id=?", [id], function (err, data) {
         if (err) return console.log(err);
         res.redirect("/orders");
     });
+});
+
+app.post("/delete", function (req, res) {
+    connection.execute("DELETE FROM orders", function (err, data) {
+        if (err) return console.log(err);
+        res.redirect("/orders");
+    })
 });
 
 app.listen(3306, function () {
