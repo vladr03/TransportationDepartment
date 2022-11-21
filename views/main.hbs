@@ -144,7 +144,7 @@
 
     <header>
         <div class="header-top" id="myHeader">
-            <a href="#default" class="logo">My Company</a>
+            <a href="/edit" class="logo">My Company</a>
             <div class="header-right">
                 <a class="active" href="/orders">List of orders</a>
                 <a href="/login">Login</a>
@@ -158,12 +158,9 @@
         <div class="form-style-8">
             <form method="POST">
                 <h2 class="form-title">Leave an order</h2>
-                <div class="form-field">
+                {{!-- <div class="form-field">
                     <input class="input" name="name" type="text" placeholder="Name" />
-                </div>
-                <div class="form-field">
-                    <input class="input" name="city" type="text" placeholder="City" />
-                </div>
+                </div> --}}
                 <div id="mydiv" class="form-field">
                     <select name="service">
                         <option value="" selected disabled hidden>Choose a service</option>
@@ -176,16 +173,18 @@
                 {{!-- <div class="form-field">
                     <input class="input" name="truck" type="text" placeholder="Truck" />
                 </div> --}}
-                {{!-- <div class="form-field">
+                <div class="form-field">
                     <select name="truck">
                         <option value="" selected disabled hidden>Choose a truck</option>
-                        <option>Volvo</option>
-                        <option>Saab</option>
-                        <option>Opel</option>
-                        <option>Audi</option>
+                        <option>Volkswagen Crafter 35 0.9т</option>
+                        <option>FAW CA1031K2L 2т</option>
+                        <option>BAW 1065Y 2.81т</option>
+                        <option>Hyundai HD 65 3.5т</option>
                     </select>
-                </div> --}}
-
+                </div>
+                <div class="form-field">
+                    <input name="address" type="text" placeholder="Address" />
+                </div>
                 <div class="form-field">
                     <input id="theDate" class="input" name="delivery_date" type="date" placeholder="Delivery_date" />
                 </div>
