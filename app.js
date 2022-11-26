@@ -9,6 +9,8 @@ var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session)
 const hbs = require("hbs");
 
+app.use(express.static('public'));
+
 app.use(session({
     key: 'session_cookie_name',
     secret: 'session_cookie_secret',

@@ -1,0 +1,90 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: teal;
+}
+
+span {
+    font-style: italic;
+}
+
+button {
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    background-color: white;
+    color: black;
+    border: 2px solid #555555;
+}
+
+button:hover {
+    background-color: #555555;
+    color: white;
+}
+
+.accordion {
+    width: 800px;
+    margin: 90px auto;
+    color: black;
+    background-color: white;
+    padding: 45px 45px;
+}
+
+.accordion .container {
+    position: relative;
+    margin: 10px 10px;
+}
+
+.accordion .label {
+    position: relative;
+    padding: 10px 0;
+    font-size: 22px;
+    color: black;
+    cursor: pointer;
+}
+
+.accordion .label::before {
+    content: '+';
+    color: black;
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    font-size: 25px;
+    transform: translateY(-50%);
+}
+
+.accordion .content {
+    position: relative;
+    background: white;
+    height: 0;
+    font-size: 18px;
+    text-align: justify;
+    width: 780px;
+    overflow: hidden;
+    transition: 0.5s;
+    border-top: 1px solid black;
+    padding-top: 9px;
+}
+
+.accordion .container.active .content {
+    height: 110px;
+}
+
+.accordion .container.active .label::before {
+    content: '-';
+    font-size: 25px;
+}
+
+h2 {
+    margin-left: 10px;
+}
+
+.form-field {
+    margin-bottom: 5px;
+}
