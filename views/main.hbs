@@ -144,11 +144,11 @@
 
     <header>
         <div class="header-top" id="myHeader">
-            <a href="/edit" class="logo">Hello, {{name}}</a>
+            <span style="font-size: 20px; color: black;">Hello, {{name}}</span>
             <div class="header-right">
                 <a class="active" href="/orders">List of orders</a>
-                <a href="/login">Login</a>
-                <a href="/create">Sign up</a>
+                <a href="/logout">Log out</a>
+                <a href="/register">Sign up</a>
             </div>
         </div>
     </header>
@@ -157,6 +157,7 @@
     <div class="layout">
         <div class="form-style-8">
             <form method="POST">
+                <input type="hidden" name="customer_id" value={{customer_id}} />
                 <h2 class="form-title">Leave an order</h2>
                 {{!-- <div class="form-field">
                     <input class="input" name="name" type="text" placeholder="Name" />
@@ -197,7 +198,7 @@
             <div>
                 We create a technological and reliable world of cargo transportation, comfortable for everyone, saving
                 time for life, recreation and business.
-                Our future is leadership in the field of low—tonnage and large-tonnage transportation.
+                Our future is leadership in the field of low-tonnage and large-tonnage transportation.
                 We make every effort to be useful and meet the needs of each client.
             </div>
         </div>

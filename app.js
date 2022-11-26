@@ -34,19 +34,11 @@ app.use(bodyParser.urlencoded({
 app.use(express.static('public'))
 app.set('view engine', 'ejs', 'hbs')
 
-var connection = mysql.createConnection({
+var pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     database: 'transportation_departament',
     multipleStatements: true
-})
-
-connection.connect((err) => {
-    if (!err) {
-        console.log('Connected');
-    } else {
-        console.log('Connected Failed')
-    }
 })
 
 const customFields = {
@@ -56,9 +48,7 @@ const customFields = {
 
 // Passport JS
 const verifyCallback = (email, password, done) => {
-    console.log('email: ', email)
-    console.log('password: ', password)
-    connection.query('SELECT * FROM customers WHERE email = ?', [email], function (error, results, fields) {
+    pool.query('SELECT * FROM customers WHERE email = ?', [email], function (error, results, fields) {
         if (error) {
             return done(error);
         }
@@ -83,25 +73,22 @@ const strategy = new LocalStrategy(customFields, verifyCallback)
 passport.use(strategy)
 
 passport.serializeUser((user, done) => {
-    console.log('inside serialize')
     done(null, user.customer_id)
 })
 
 passport.deserializeUser(function (userId, done) {
-    console.log('deserializeUser' + userId)
-    connection.query('SELECT * FROM customers WHERE customer_id = ?', [userId], function (error, results) {
+    console.log('deserializeUser: ' + userId)
+    pool.query('SELECT * FROM customers WHERE customer_id = ?', [userId], function (error, results) {
         done(null, results[0])
     })
 })
 
 function validPassword(password, hash, salt) {
-    console.log('password: ', password)
     var hasVerify = crypto.pbkdf2Sync(password, salt, 10000, 60, 'sha512').toString('hex')
     return hash === hasVerify
 }
 
 function genPassword(password) {
-    console.log('password: ', password)
     var salt = crypto.randomBytes(32).toString('hex');
     var genhash = crypto.pbkdf2Sync(password, salt, 10000, 60, 'sha512').toString('hex')
     return { salt: salt, hash: genhash }
@@ -126,7 +113,7 @@ function isAdmin(req, res, next) {
 }
 
 function userExists(req, res, next) {
-    connection.query('SELECT * FROM customers WHERE email = ?', [req.body.email], function (error, results, fields) {
+    pool.query('SELECT * FROM customers WHERE email = ?', [req.body.email], function (error, results, fields) {
         if (error) {
             console.log('Error')
         }
@@ -141,30 +128,37 @@ function userExists(req, res, next) {
 app.get('/logout', (req, res, next) => {
     req.logout(function (err) {
         if (err) { return next(err); }
-        res.redirect('/prtotected-route')
+        res.redirect('/login')
     })
 })
 
-// app.get('/login-success', (req, res, next) => {
-//     console.log('user:', req.user)
-//     //res.send('<p>You successfully logged in. --> <a href="/protected-route">Go to protected route</a></p>')
-//     res.render('test', {email: req.user.email})
-// })
-app.get('/main', function (req, res) {
+app.get('/main', isAuth, function (req, res) {
     console.log('user:', req.user)
-    res.render("main.hbs", {name: req.user.name});
+    res.render("main.hbs", { name: req.user.name, customer_id: req.user.customer_id });
+});
+
+app.post("/main", isAuth, function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+    const customer_id = req.body.customer_id;
+    const truck = req.body.truck;
+    const service = req.body.service;
+    const address = req.body.address;
+    const delivery_date = req.body.delivery_date;
+    pool.query("INSERT INTO orders (service, truck, address, delivery_date, customer_id) VALUES (?, ?, ?, ?, ?)", [service, truck, address, delivery_date, customer_id], function (err, data) {
+        if (err) return console.log(err);
+        res.redirect("/main");
+    });
 });
 
 app.get('/login-failure', (req, res, next) => {
     res.send('You entered the wrong password.')
 })
 
-//create account
-app.get("/create", function (req, res) {
-    res.render("create.hbs");
+app.get("/register", function (req, res) {
+    res.render("register.hbs");
 });
 
-app.post('/create', userExists, (req, res, next) => {
+app.post('/register', userExists, (req, res, next) => {
     console.log(req.body.password)
     const saltHash = genPassword(req.body.password)
     console.log(saltHash)
@@ -175,35 +169,36 @@ app.post('/create', userExists, (req, res, next) => {
     const number = req.body.number;
     const city = req.body.city;
 
-    connection.query('INSERT INTO customers(name, email, number, city, hash, salt, isAdmin) VALUES(?, ?, ?, ?, ?, ?, 0) ', [name, email, number, city, hash, salt], function (error, results, fields) {
+    pool.query('INSERT INTO customers(name, email, number, city, hash, salt, isAdmin) VALUES(?, ?, ?, ?, ?, ?, 0) ', [name, email, number, city, hash, salt], function (error, results, fields) {
         if (error) {
             console.log('Error')
         } else {
             console.log('Successfully Entered')
         }
     })
-
+    pool.query('INSERT INTO cities(city) VALUES(?)', [city], function (error, results, fields) {
+        if (error) {
+            console.log('Error')
+        } else {
+            console.log('Successfully Entered')
+        }
+    })
     res.redirect('/login')
 })
 
-//login
 app.get('/login', function (req, res) {
     res.render('login.hbs');
 });
 
 app.post('/login', passport.authenticate('local', { failureRedirect: '/login-failure', successRedirect: '/main' }))
 
-app.get('/protected-route', isAuth, (req, res, next) => {
-    res.send('<p>You are authenticated<a href="/logout">Logout and reload</a></p>')
-
-})
-
 app.get('/admin-route', isAdmin, (req, res, next) => {
     res.send('<p>You are admin<a href="/logout">Logout and reload</a></p>')
 })
 
 app.get('/notAuthorized', (req, res, next) => {
-    res.send('<h1>You are not authorized to view the resource </h1><p><a href="/login">Retry Login</a></p>')
+    // res.send('<h1>You are not authorized to view the resource </h1><p><a href="/login">Retry Login</a></p>')
+    res.render('notauth')
 })
 
 app.get('/notAuthorizedAdmin', (req, res, next) => {
@@ -214,35 +209,14 @@ app.get('/userAlreadyExists', (req, res, next) => {
     res.send('<h1>Sorry This username is taken </h1><p><a href="/register">Register with diffrent username</a></p>')
 })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //format date
 hbs.registerHelper('date', require('helper-date'));
-
-
-
-
-
-
-//leave an order
-
 
 //edit account
 app.get("/edit/:id", function (req, res) {
     const id = req.params.id;
     console.log("id:", id);
-    connection.query("SELECT * FROM customers WHERE id=?", [id], function (err, data) {
+    pool.query("SELECT * FROM customers WHERE id=?", [id], function (err, data) {
         if (err) return console.log(err);
         res.render("edit.hbs", {
             orders: data[0]
@@ -250,9 +224,9 @@ app.get("/edit/:id", function (req, res) {
     });
 });
 
-//all orders
-app.get("/orders", function (req, res) {
-    connection.query("SELECT * FROM orders", function (err, data) {
+//customer's orders
+app.get("/orders", isAuth, function (req, res) {
+    pool.query("SELECT * FROM orders WHERE customer_id=?", [req.user.customer_id], function (err, data) {
         if (err) return console.log(err);
         console.log(data);
         res.render("orders.hbs", {
@@ -263,7 +237,7 @@ app.get("/orders", function (req, res) {
 
 //all accounts
 app.get("/index", function (req, res) {
-    connection.query("SELECT * FROM customers", function (err, data) {
+    pool.query("SELECT * FROM customers", function (err, data) {
         if (err) return console.log(err);
         res.render("index.hbs", {
             customers: data
@@ -271,80 +245,34 @@ app.get("/index", function (req, res) {
     });
 });
 
-// app.post("/main", urlencodedParser, function (req, res) {
+app.post("/edit", isAuth, function (req, res) {
 
-//     if (!req.body) return res.sendStatus(400);
-//     const name = req.body.name;
-//     const service = req.body.service;
-//     const city = req.body.city;
-//     const delivery_date = req.body.delivery_date;
-//     connection.query("INSERT INTO orders (name, service, city, delivery_date) VALUES (?, ?, ?, ?)", [name, service, city, delivery_date], function (err, data) {
-//         if (err) return console.log(err);
-//         res.redirect("/main");
-//     });
-// });
-
-// app.post("/create", urlencodedParser, function (req, res) {
-
-//     if (!req.body) return res.sendStatus(400);
-//     const name = req.body.name;
-//     const email = req.body.email;
-//     const number = req.body.number;
-//     const city = req.body.city;
-//     const password = req.body.password;
-//     connection.query("INSERT INTO customers (name, email, number, city, password) VALUES (?, ?, ?, ?, ?)", [name, email, number, city, password], function (err, data) {
-//         if (err) return console.log(err);
-//         res.redirect("/login");
-//     });
-// });
-
-// app.post("/edit", urlencodedParser, function (req, res) {
-
-//     if (!req.body) return res.sendStatus(400);
-//     const id = req.body.id;
-//     const name = req.body.name;
-//     const email = req.body.email;
-//     const number = req.body.number;
-//     const city = req.body.city;
-//     const password = req.body.password;
-//     console.log("id: ", id);
-//     console.log("name", name);
-//     connection.query("UPDATE customers SET name=?, email=?, number=?, city=?, password=? WHERE id=?", [name, email, number, city, password, id], function (err, data) {
-//         if (err) return console.log(err);
-//         res.redirect("/index");
-//     });
-// });
-
-// app.post("/login", urlencodedParser, function (req, res) {
-//     const email = req.body.email;
-//     const password = req.body.password;
-//     if (email && password) {
-//         connection.query('SELECT * FROM customers WHERE email = ? AND password = ?', [email, password], function (error, results, fields) {
-//             if (error) throw error;
-//             if (results.length > 0) {
-//                 res.redirect('/index');
-//             } else {
-//                 res.send('Incorrect Username and/or Password!');
-//             }
-//             res.end();
-//         });
-//     } else {
-//         res.send('Please enter Username and Password!');
-//         res.end();
-//     }
-// });
+    if (!req.body) return res.sendStatus(400);
+    const id = req.body.id;
+    const name = req.body.name;
+    const email = req.body.email;
+    const number = req.body.number;
+    const city = req.body.city;
+    const password = req.body.password;
+    console.log("id: ", id);
+    console.log("name", name);
+    pool.query("UPDATE customers SET name=?, email=?, number=?, city=?, password=? WHERE id=?", [name, email, number, city, password, id], function (err, data) {
+        if (err) return console.log(err);
+        res.redirect("/index");
+    });
+});
 
 app.post("/delete/:id", function (req, res) {
     const id = req.params.id;
     //console.log(id);
-    connection.query("DELETE FROM orders WHERE id=?", [id], function (err, data) {
+    pool.query("DELETE FROM orders WHERE id=?", [id], function (err, data) {
         if (err) return console.log(err);
         res.redirect("/orders");
     });
 });
 
 app.post("/delete", function (req, res) {
-    connection.query("DELETE FROM orders", function (err, data) {
+    pool.query("DELETE FROM orders", function (err, data) {
         if (err) return console.log(err);
         res.redirect("/orders");
     })
