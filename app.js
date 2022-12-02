@@ -153,7 +153,7 @@ app.post("/main", isAuth, function (req, res) {
 });
 
 app.get('/login-failure', (req, res, next) => {
-    res.send('You entered the wrong password.')
+    res.send('You entered the wrong password or email.')
 })
 
 app.get("/register", function (req, res) {
@@ -178,13 +178,13 @@ app.post('/register', userExists, (req, res, next) => {
             console.log('Successfully Entered')
         }
     })
-    pool.query('INSERT INTO cities(city) VALUES(?)', [city], function (error, results, fields) {
-        if (error) {
-            console.log('Error')
-        } else {
-            console.log('Successfully Entered')
-        }
-    })
+    // pool.query('INSERT INTO cities(city) VALUES(?)', [city], function (error, results, fields) {
+    //     if (error) {
+    //         console.log('Error')
+    //     } else {
+    //         console.log('Successfully Entered')
+    //     }
+    // })
     res.redirect('/login')
 })
 
@@ -214,18 +214,6 @@ app.get('/userAlreadyExists', (req, res, next) => {
 //format date
 hbs.registerHelper('date', require('helper-date'));
 
-//edit account
-app.get("/edit/:id", function (req, res) {
-    const id = req.params.id;
-    console.log("id:", id);
-    pool.query("SELECT * FROM customers WHERE id=?", [id], function (err, data) {
-        if (err) return console.log(err);
-        res.render("edit.hbs", {
-            orders: data[0]
-        });
-    });
-});
-
 //customer's orders
 app.get("/orders", isAuth, function (req, res) {
     pool.query("SELECT * FROM orders WHERE customer_id=?", [req.user.customer_id], function (err, data) {
@@ -237,37 +225,10 @@ app.get("/orders", isAuth, function (req, res) {
     });
 });
 
-//all accounts
-app.get("/index", function (req, res) {
-    pool.query("SELECT * FROM customers", function (err, data) {
-        if (err) return console.log(err);
-        res.render("index.hbs", {
-            customers: data
-        });
-    });
-});
-
-app.post("/edit", isAuth, function (req, res) {
-
-    if (!req.body) return res.sendStatus(400);
-    const id = req.body.id;
-    const name = req.body.name;
-    const email = req.body.email;
-    const number = req.body.number;
-    const city = req.body.city;
-    const password = req.body.password;
-    console.log("id: ", id);
-    console.log("name", name);
-    pool.query("UPDATE customers SET name=?, email=?, number=?, city=?, password=? WHERE id=?", [name, email, number, city, password, id], function (err, data) {
-        if (err) return console.log(err);
-        res.redirect("/index");
-    });
-});
-
 app.post("/delete/:id", function (req, res) {
     const id = req.params.id;
-    //console.log(id);
-    pool.query("DELETE FROM orders WHERE id=?", [id], function (err, data) {
+    console.log(id);
+    pool.query("DELETE FROM orders WHERE order_id=?", [id], function (err, data) {
         if (err) return console.log(err);
         res.redirect("/orders");
     });
@@ -278,6 +239,31 @@ app.post("/delete", function (req, res) {
         if (err) return console.log(err);
         res.redirect("/orders");
     })
+});
+
+app.get("/edit/:id", isAuth, function (req, res) {
+    const id = req.params.id;
+    console.log(id)
+    pool.query("SELECT * FROM orders WHERE order_id=?", [id], function (err, data) {
+        if (err) return console.log(err);
+        console.log(data[0])
+        res.render("edit.hbs", {
+            order: data[0]
+        });
+    });
+});
+
+app.post("/edit", isAuth, function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+    const order_id = req.body.order_id;
+    const service = req.body.service;
+    const truck = req.body.truck;
+    const address = req.body.address;
+    const delivery_date = req.body.delivery_date;
+    pool.query("UPDATE orders SET service=?, truck=?, address=?, delivery_date=? WHERE order_id=?", [service, truck, address, delivery_date, order_id], function (err, data) {
+        if (err) return console.log(err);
+        res.redirect("/orders");
+    });
 });
 
 app.listen(3306, function () {

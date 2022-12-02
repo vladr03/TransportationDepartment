@@ -14,21 +14,59 @@
             <div class="header-right">
                 <a class="active" href="/orders">List of orders</a>
                 <a href="/logout">Log out</a>
-                <a href="/register">Sign up</a>
             </div>
         </div>
     </header>
 
+    <h2 style="text-align: center;">Сhoose the right truck, that you think is the most suitable:</h2>
+    <div class="trucks">
+        <div>
+            <img class="truck" src="/images/vw_caddy.png" alt="">
+        </div>
+        <div>
+            <img class="truck" src="/images/vw_crafter.png" alt="">
+        </div>
+        <div>
+            <img class="truck" src="/images/vw_transporter.png" alt="">
+        </div>
+    </div>
+    <div class="about_cars">
+        <div class="info">
+            <p><span class="car_name">Volkswagen Caddy Cargo Maxi</span></p>
+            <p>Load Capacity: 2.2 t</p>
 
+        </div>
+        <div class="info">
+            <p><span class="car_name">Volkswagen Crafter Kasten 30</span></p>
+            <p>Load Capacity: 3 t</p>
+        </div>
+        <div class="info">
+            <p><span class="car_name">Volkswagen Transporter Kasten LR</span></p>
+            <p>Load Capacity: 3.9 t</p>
+        </div>
+    </div>
+    <div class="buttons">
+        <div class="form_radio_btn">
+            <input type="radio" id="caddy" name="car" value="Caddy" checked>
+            <label for="caddy">Caddy</label>
+        </div>
+        <div class="form_radio_btn">
+            <input type="radio" id="crafter" name="car" value="Crafter">
+            <label for="crafter">Crafter</label>
+        </div>
+        <div class="form_radio_btn">
+            <input type="radio" id="transporter" name="car" value="Transporter">
+            <label for="transporter">Transporter</label>
+        </div>
+        </form>
+    </div>
     <div class="layout">
         <div class="form-style-8">
             <form method="POST">
                 <input type="hidden" name="customer_id" value={{customer_id}} />
+                <input id="choosen_car" type="hidden" name="truck" value={{customer_id}} />
                 <h2 class="form-title">Leave an order</h2>
-                {{!-- <div class="form-field">
-                    <input class="input" name="name" type="text" placeholder="Name" />
-                </div> --}}
-                <div id="mydiv" class="form-field">
+                <div class="form-field">
                     <select name="service">
                         <option value="" selected disabled hidden>Choose a service</option>
                         <option>Apartment relocation</option>
@@ -38,40 +76,35 @@
                     </select>
                 </div>
                 {{!-- <div class="form-field">
-                    <input class="input" name="truck" type="text" placeholder="Truck" />
-                </div> --}}
-                <div class="form-field">
                     <select name="truck">
                         <option value="" selected disabled hidden>Choose a truck</option>
-                        <option>Volkswagen Crafter 35 0.9т</option>
-                        <option>FAW CA1031K2L 2т</option>
-                        <option>BAW 1065Y 2.81т</option>
-                        <option>Hyundai HD 65 3.5т</option>
+                        <option>Caddy</option>
+                        <option>Crafter</option>
+                        <option>Transporter</option>
                     </select>
-                </div>
+                </div> --}}
                 <div class="form-field">
                     <input name="address" type="text" placeholder="Address" />
                 </div>
                 <div class="form-field">
                     <input id="theDate" class="input" name="delivery_date" type="date" placeholder="Delivery_date" />
                 </div>
-                <input type="submit" class="submitBtn" value="Create the order" onclick="orderHandler()" />
+                <input type="submit" class="submitBtn" value="Create the order" onclick="displayRadioValue()" />
                 <p style="color: teal;" id="success"></p>
             </form>
         </div>
-        <div class="description">
-            <h2>Our mission</h2>
-            <div>
-                We create a technological and reliable world of cargo transportation, comfortable for everyone, saving
-                time for life, recreation and business.
-                Our future is leadership in the field of low-tonnage and large-tonnage transportation.
-                We make every effort to be useful and meet the needs of each client.
-            </div>
+    </div>
+    <div class="description">
+        <h2>Our mission</h2>
+        <div>
+            We create a technological and reliable world of cargo transportation, comfortable for everyone, saving
+            time for life, recreation and business.
+            Our future is leadership in the field of low-tonnage and large-tonnage transportation.
+            We make every effort to be useful and meet the needs of each client.
         </div>
     </div>
     <footer>
         <div class="footer-bottom">
-
             About us
         </div>
     </footer>
@@ -79,21 +112,22 @@
 <script>
 
     var date = new Date();
-
     var day = date.getDate();
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
-
     if (month < 10) month = "0" + month;
     if (day < 10) day = "0" + day;
-
     var today = year + "-" + month + "-" + day;
     document.getElementById("theDate").value = today;
 
-    //function orderHandler() {
-    //    document.getElementById("success").innerHTML = "Order was created successfully";
-    //    let element = document.getElementById("mydiv");
-    //    element.setAttribute("hidden");
-    //}
+    function displayRadioValue() {
+        var ele = document.getElementsByName('car');
+        console.log(ele)
+        for (i = 0; i < ele.length; i++) {
+            if (ele[i].checked)
+                document.getElementById('choosen_car').value = ele[i].value;
+        }
+    }
+
 </script>
 <html>

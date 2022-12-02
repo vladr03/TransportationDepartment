@@ -54,7 +54,7 @@ body {
 }
 
 .form-style-8 {
-    width: 500px;
+    width: 600px;
     padding: 30px;
     background: #FFFFFF;
     margin: 50px auto;
@@ -68,6 +68,7 @@ body {
     font-weight: 100;
     padding: 20px;
     margin: -30px -30px 30px -30px;
+    text-align: center;
 }
 
 .form-style-8 input[type="text"],
@@ -125,9 +126,80 @@ footer {
 }
 
 .description div {
-    width: 500px;
+    width: 800px;
     text-align: justify;
     margin-bottom: 20px;
     font-size: 18px;
     line-height: 135%;
+}
+
+.trucks {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.truck {
+    width: 450px;
+}
+
+.about_cars {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.about_cars .info {
+    width: 450px;
+    text-align: center;
+}
+
+.car_name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.buttons .form_radio_btn {
+    width: 450px;
+    text-align: center;
+}
+
+.form_radio_btn {
+    display: inline-block;
+}
+
+.form_radio_btn input[type=radio] {
+    display: none;
+}
+
+.form_radio_btn label {
+    display: inline-block;
+    cursor: pointer;
+    padding: 0px 15px;
+    line-height: 34px;
+    border: 1px solid #999;
+    border-radius: 6px;
+    user-select: none;
+}
+
+.form_radio_btn input[type=radio]:checked+label {
+    background: #64ad9e;
+}
+
+.form_radio_btn label:hover {
+    color: #666;
+}
+
+.form_radio_btn input[type=radio]:disabled+label {
+    background: #efefef;
+    color: #666;
 }
