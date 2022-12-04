@@ -25,11 +25,15 @@
         </div> --}}
         <div class="accordion-body">
             <div class="accordion">
+
                 <h2>Orders</h2>
-                {{#each orders}}
+                {{#each orders }}
                 <div class="container">
+
                     <div class="label">{{delivery_date}}</div>
+
                     <div style="" class="content">
+
                         <div class="form-field">
                             Truck: {{truck}}
                         </div>
@@ -37,7 +41,18 @@
                             Service: {{service}}
                         </div>
                         <div class="form-field">
-                            Address: {{address}}
+                            Sending Address: {{sending_address}}
+                        </div>
+                        <div class="form-field">
+                            Destination Address: {{destination_address}}
+                        </div>
+                        <div class="info">
+                            <div class="status">
+                                The order is confirmed.
+                            </div>
+                            <div style="margin-left: 10px">
+                                <a class="details" href="details/{{truck}}">More detailed (click)</a>
+                            </div>
                         </div>
                         <form action="edit/{{order_id}}" method="GET" style="display:inline;">
                             <button class="under" type="submit">Edit</button>
@@ -49,6 +64,8 @@
 
                 </div>
                 {{/each}}
+
+
             </div>
         </div>
 

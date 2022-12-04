@@ -9,7 +9,9 @@ var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session)
 const hbs = require("hbs");
 
-app.use(express.static('public'));
+
+
+app.use(express.static(__dirname + '/public'));
 
 app.use(session({
     key: 'session_cookie_name',
@@ -35,6 +37,21 @@ app.use(bodyParser.urlencoded({
 }))
 app.use(express.static('public'))
 app.set('view engine', 'ejs', 'hbs')
+
+hbs.registerHelper("when", function (operand_1, operator, operand_2, options) {
+    var operators = {
+        'eq': function (l, r) { return l == r; },
+        'noteq': function (l, r) { return l != r; },
+        'gt': function (l, r) { return Number(l) > Number(r); },
+        'or': function (l, r) { return l || r; },
+        'and': function (l, r) { return l && r; },
+        '%': function (l, r) { return (l % r) === 0; }
+    }
+        , result = operators[operator](operand_1, operand_2);
+
+    if (result) return options.fn(this);
+    else return options.inverse(this);
+});
 
 var pool = mysql.createPool({
     host: 'localhost',
@@ -136,7 +153,7 @@ app.get('/logout', (req, res, next) => {
 
 app.get('/main', isAuth, function (req, res) {
     console.log('user:', req.user)
-    res.render("main.hbs", { name: req.user.name, customer_id: req.user.customer_id });
+    res.render("main.hbs", { isAdmin: req.user.isAdmin, name: req.user.name, customer_id: req.user.customer_id });
 });
 
 app.post("/main", isAuth, function (req, res) {
@@ -144,9 +161,10 @@ app.post("/main", isAuth, function (req, res) {
     const customer_id = req.body.customer_id;
     const truck = req.body.truck;
     const service = req.body.service;
-    const address = req.body.address;
+    const sending_address = req.body.sending_address;
+    const destination_address = req.body.destination_address;
     const delivery_date = req.body.delivery_date;
-    pool.query("INSERT INTO orders (service, truck, address, delivery_date, customer_id) VALUES (?, ?, ?, ?, ?)", [service, truck, address, delivery_date, customer_id], function (err, data) {
+    pool.query("INSERT INTO orders (service, truck, sending_address, destination_address, delivery_date, customer_id) VALUES (?, ?, ?, ?, ?, ?)", [service, truck, sending_address, destination_address, delivery_date, customer_id], function (err, data) {
         if (err) return console.log(err);
         res.redirect("/main");
     });
@@ -217,8 +235,8 @@ hbs.registerHelper('date', require('helper-date'));
 //customer's orders
 app.get("/orders", isAuth, function (req, res) {
     pool.query("SELECT * FROM orders WHERE customer_id=?", [req.user.customer_id], function (err, data) {
+        console.log(data.length)
         if (err) return console.log(err);
-        console.log(data);
         res.render("orders.hbs", {
             orders: data
         });
@@ -258,13 +276,27 @@ app.post("/edit", isAuth, function (req, res) {
     const order_id = req.body.order_id;
     const service = req.body.service;
     const truck = req.body.truck;
-    const address = req.body.address;
+    const sending_address = req.body.sending_address;
+    const destination_address = req.body.destination_address;
     const delivery_date = req.body.delivery_date;
-    pool.query("UPDATE orders SET service=?, truck=?, address=?, delivery_date=? WHERE order_id=?", [service, truck, address, delivery_date, order_id], function (err, data) {
+    pool.query("UPDATE orders SET service=?, truck=?, sending_address=?, destination_address = ?, delivery_date=? WHERE order_id=?", [service, truck, sending_address, destination_address, delivery_date, order_id], function (err, data) {
         if (err) return console.log(err);
         res.redirect("/orders");
     });
 });
+
+app.get('/details/:truck', isAuth, function (req, res) {
+    const truck = req.params.truck
+    console.log(truck)
+    pool.query("SELECT driver, truck_number FROM trucks WHERE truck=?", [truck], function (err, result) {
+        if (err) return console.log(err);
+        res.render('details.hbs', {
+            details: result[0]
+        });
+    });
+
+})
+
 
 app.listen(3306, function () {
     console.log("Сервер ожидает подключения...");

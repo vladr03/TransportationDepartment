@@ -12,7 +12,12 @@
         <div class="header-top" id="myHeader">
             <span style="font-size: 20px; color: black;">Hello, {{name}}</span>
             <div class="header-right">
+                {{#when isAdmin 'eq' 0}}
                 <a class="active" href="/orders">List of orders</a>
+                {{/when}}
+                {{#when isAdmin 'eq' 1}}
+                <a class="active" href="/admin">All orders</a>
+                {{/when}}
                 <a href="/logout">Log out</a>
             </div>
         </div>
@@ -84,7 +89,10 @@
                     </select>
                 </div> --}}
                 <div class="form-field">
-                    <input name="address" type="text" placeholder="Address" />
+                    <input name="sending_address" type="text" placeholder="Sending Address" />
+                </div>
+                <div class="form-field">
+                    <input name="destination_address" type="text" placeholder="Destination Address" />
                 </div>
                 <div class="form-field">
                     <input id="theDate" class="input" name="delivery_date" type="date" placeholder="Delivery_date" />

@@ -1,0 +1,23 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #F8F8FF;
+    box-sizing: border-box;
+    font-size: 18px;
+}
+
+#rectangle {
+    margin: 0 auto;
+    text-align: center;
+    width: 300px;
+    height: 100px;
+    border: 2px solid black;
+    padding: 40px;
+}
+
+#rectangle div {
+    margin-bottom: 15px;
+}
+
+span {
+    color: red;
+}
