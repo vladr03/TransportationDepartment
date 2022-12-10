@@ -9,8 +9,6 @@ var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session)
 const hbs = require("hbs");
 
-
-
 app.use(express.static(__dirname + '/public'));
 
 app.use(session({
@@ -196,13 +194,6 @@ app.post('/register', userExists, (req, res, next) => {
             console.log('Successfully Entered')
         }
     })
-    // pool.query('INSERT INTO cities(city) VALUES(?)', [city], function (error, results, fields) {
-    //     if (error) {
-    //         console.log('Error')
-    //     } else {
-    //         console.log('Successfully Entered')
-    //     }
-    // })
     res.redirect('/login')
 })
 
@@ -212,12 +203,17 @@ app.get('/login', function (req, res) {
 
 app.post('/login', passport.authenticate('local', { failureRedirect: '/login-failure', successRedirect: '/main' }))
 
-app.get('/admin-route', isAdmin, (req, res, next) => {
-    res.send('<p>You are admin<a href="/logout">Logout and reload</a></p>')
+app.get('/admin', isAdmin, function (req, res) {
+    pool.query("SELECT * FROM orders", function (err, data) {
+        console.log(data)
+        if (err) return console.log(err);
+        res.render("admin.hbs", {
+            orders: data
+        });
+    });
 })
 
 app.get('/notAuthorized', (req, res, next) => {
-    // res.send('<h1>You are not authorized to view the resource </h1><p><a href="/login">Retry Login</a></p>')
     res.render('notauth')
 })
 
@@ -281,7 +277,9 @@ app.post("/edit", isAuth, function (req, res) {
     const delivery_date = req.body.delivery_date;
     pool.query("UPDATE orders SET service=?, truck=?, sending_address=?, destination_address = ?, delivery_date=? WHERE order_id=?", [service, truck, sending_address, destination_address, delivery_date, order_id], function (err, data) {
         if (err) return console.log(err);
-        res.redirect("/orders");
+        if (req.user.isAdmin == 0) {
+            res.redirect("/orders");
+        } else res.redirect("/admin");
     });
 });
 
@@ -294,10 +292,19 @@ app.get('/details/:truck', isAuth, function (req, res) {
             details: result[0]
         });
     });
-
 })
 
+app.post('/orders', isAuth, function (req, res) {
+    const comment = req.body.comment
+    const order_id = req.body.order_id
+    console.log(comment)
+    console.log(order_id)
+    pool.query("INSERT INTO comments (order_id, comment) VALUES (?, ?)", [order_id, comment], function (err, data) {
+        if (err) return console.log(err);
+        res.redirect('/orders');
+    });
+})
 
 app.listen(3306, function () {
     console.log("Сервер ожидает подключения...");
-});
+}); 

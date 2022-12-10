@@ -28,12 +28,18 @@
 
                 <h2>Orders</h2>
                 {{#each orders }}
+
                 <div class="container">
 
                     <div class="label">{{delivery_date}}</div>
-
+                    <div style="margin-bottom: 10px">
+                        <form action="/orders" method="POST" style="display:inline;">
+                            <input type="hidden" name="order_id" value={{order_id}} />
+                            <input type="text" name="comment" placeholder="Comment" />
+                            <input type="submit" value="Leave a comment" />
+                        </form>
+                    </div>
                     <div style="" class="content">
-
                         <div class="form-field">
                             Truck: {{truck}}
                         </div>
@@ -61,17 +67,11 @@
                             <button class="under" type="submit">Delete</button>
                         </form>
                     </div>
-
                 </div>
                 {{/each}}
-
-
             </div>
         </div>
-
-
     </div>
-
     <script>
         const newDates = document.getElementsByClassName('label')
         for (let i = 0; i < newDates.length; i++) {

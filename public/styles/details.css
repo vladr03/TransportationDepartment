@@ -8,8 +8,8 @@ body {
 #rectangle {
     margin: 0 auto;
     text-align: center;
-    width: 300px;
-    height: 100px;
+    width: 400px;
+    height: 130px;
     border: 2px solid black;
     padding: 40px;
 }

@@ -111,7 +111,8 @@ body {
 
 footer {
     display: flex;
-    flex-direction: clo;
+    flex-direction: column;
+    height: 15px;
     justify-content: center;
     padding: 5px;
     background-color: teal;

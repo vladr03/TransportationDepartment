@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="../styles/orders.css">
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <div class="buttons">
+            <div>
+                <a href="/main" class="previous round">&#8249;</a>
+            </div>
+            <div>
+                <div >
+                    <form action="delete" method="POST">
+                        <button type="submit">Delete all orders</button>
+                    </form>
+                </div>
+                <div><button type="submit">Filter by date</button></div>
+            </div>
+        </div>
+    <div class="container">
+        
+        {{!-- <div id="mydiv" hidden>
+            <div class="no-orders">
+                There are no orders here
+            </div>
+        </div> --}}
+        <div class="accordion-body">
+            <div class="accordion">
+
+                <h2>Orders</h2>
+                {{#each orders }}
+                <div class="container">
+                    <div class="label">{{delivery_date}}</div>
+                    <div style="" class="content">
+                        <div class="form-field">
+                            Truck: {{truck}}
+                        </div>
+                        <div class="form-field">
+                            Service: {{service}}
+                        </div>
+                        <div class="form-field">
+                            Sending Address: {{sending_address}}
+                        </div>
+                        <div class="form-field">
+                            Destination Address: {{destination_address}}
+                        </div>
+                        <div class="info">
+                            <div class="status">
+                                The order is confirmed.
+                            </div>
+                            <div style="margin-left: 10px">
+                                <a class="details" href="details/{{truck}}">More detailed (click)</a>
+                            </div>
+                        </div>
+                        <form action="edit/{{order_id}}" method="GET" style="display:inline;">
+                            <button class="under" type="submit">Edit</button>
+                        </form>
+                        <form action="delete/{{order_id}}" method="POST" style="display:inline;">
+                            <button class="under" type="submit">Delete</button>
+                        </form>
+                    </div>
+
+                </div>
+                {{/each}}
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+        //date format
+        const newDates = document.getElementsByClassName('label')
+        for (let i = 0; i < newDates.length; i++) {
+            console.log(new Date(newDates[i].innerHTML))
+            newDates[i].innerHTML = new Date((newDates[i].innerHTML)).toLocaleDateString()
+        }
+        const accordion = document.getElementsByClassName('container')
+
+        for (i = 0; i < accordion.length; i++) {
+            accordion[i].addEventListener('click', function () {
+                this.classList.toggle('active')
+            })
+        }
+    </script>
+</body>
+<html>
